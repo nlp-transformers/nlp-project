@@ -1,17 +1,39 @@
 from transformers import pipeline
 import whisper
 import gradio as gr
-# Import the required module for text 
-# to speech conversion
-import pyttsx3
- 
-# init function to get an engine instance for the speech synthesis
-engine = pyttsx3.init()
+from langchain.llms import OpenAI
+from langchain.agents import load_tools, initialize_agent, AgentType
 
+# Import the required module for text
+# to speech conversion
+from AppKit import NSSpeechSynthesizer
+
+nssp = NSSpeechSynthesizer
+
+ve = nssp.alloc().init()
+
+# import the openAI
+llm = OpenAI(temperature=0.9)
+
+# to get input from speech use the following libs
 p = pipeline("automatic-speech-recognition")
 model = whisper.load_model("base")
 
+# create a list of tools
+tool_names = [
+    "serpapi",  # for google search
+    "llm-math",  # this particular tool needs an llm too, so need to pass that
+]
 
+tools = load_tools(tool_names=tool_names, llm=llm)
+
+# initialize them
+agent = initialize_agent(
+    tools=tools, llm=llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True
+)
+
+
+# core function which will do all the work (POC level code)
 def transcribe(audio, state=""):
     # load audio and pad/trim it to fit 30 seconds
     audio = whisper.load_audio(audio)
@@ -30,12 +52,10 @@ def transcribe(audio, state=""):
     print("result text --> ", result_text)
     # Now add the lanfChain logic here to process the text and get the responses.
     # once we get the response, we can output it to the voice.
-    
-    # say method on the engine that passing input text to be spoken
-    engine.say(result_text)
- 
-    # run and wait method, it processes the voice commands.
-    engine.runAndWait()
+    output = agent.run(result_text)
+    # # say method on the engine that passing input text to be spoken
+    ve.startSpeakingString_(output)
+
     return result_text, result_text
 
 
@@ -43,7 +63,7 @@ def transcribe(audio, state=""):
 
 gr.Interface(
     fn=transcribe,
-    inputs=[gr.Audio(source="microphone", type="filepath", streaming=True), "state"],
+    inputs=[gr.Audio(source="microphone", type="filepath", streaming=False), "state"],
     outputs=["textbox", "state"],
     live=True,
 ).launch()
