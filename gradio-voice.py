@@ -28,8 +28,11 @@ def transcribe(audio, state=""):
     result = whisper.decode(model, mel, options)
     result_text = result.text
     print("result text --> ", result_text)
+    # Now add the lanfChain logic here to process the text and get the responses.
+    # once we get the response, we can output it to the voice.
+    
     # say method on the engine that passing input text to be spoken
-    engine.say('Hello sir, how may I help you, sir.')
+    engine.say(result_text)
  
     # run and wait method, it processes the voice commands.
     engine.runAndWait()
