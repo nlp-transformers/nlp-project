@@ -1,6 +1,12 @@
 from transformers import pipeline
 import whisper
 import gradio as gr
+# Import the required module for text 
+# to speech conversion
+import pyttsx3
+ 
+# init function to get an engine instance for the speech synthesis
+engine = pyttsx3.init()
 
 p = pipeline("automatic-speech-recognition")
 model = whisper.load_model("base")
@@ -22,7 +28,11 @@ def transcribe(audio, state=""):
     result = whisper.decode(model, mel, options)
     result_text = result.text
     print("result text --> ", result_text)
-
+    # say method on the engine that passing input text to be spoken
+    engine.say('Hello sir, how may I help you, sir.')
+ 
+    # run and wait method, it processes the voice commands.
+    engine.runAndWait()
     return result_text, result_text
 
 
