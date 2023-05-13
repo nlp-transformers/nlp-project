@@ -56,7 +56,7 @@ def transcribe(audio, state=""):
     # # say method on the engine that passing input text to be spoken
     ve.startSpeakingString_(output)
 
-    return result_text, result_text
+    return output, output
 
 
 # Set the starting state to an empty string
