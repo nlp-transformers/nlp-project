@@ -1,4 +1,7 @@
+AppKit
+deep_translator==1.10.1
 gradio==3.30.0
 langchain==0.0.169
 openai_whisper==20230314
 transformers==4.29.1
+torch==2.0.1
