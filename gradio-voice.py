@@ -85,4 +85,4 @@ gr.Interface(
     inputs=[gr.Audio(source="microphone", type="filepath", streaming=False), "state"],
     outputs=["textbox", "state"],
     live=True,
-).launch()
+).launch(share=True)
