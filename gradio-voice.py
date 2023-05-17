@@ -28,7 +28,7 @@ language = 'en'
 
 
 # import the openAI
-llm = OpenAI(temperature=0.9)
+llm = OpenAI(temperature=0.1)
 
 # to get input from speech use the following libs
 model = whisper.load_model("medium")
