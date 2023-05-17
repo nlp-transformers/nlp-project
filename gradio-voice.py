@@ -4,14 +4,28 @@ import gradio as gr
 from langchain.llms import OpenAI
 from langchain.agents import load_tools, initialize_agent, AgentType
 from deep_translator import GoogleTranslator
+from langchain.tools import YouTubeSearchTool
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+from youTube_helper import video_get
 
 
-# Import the required module for text
-# to speech conversion
-from AppKit import NSSpeechSynthesizer
+# ******** MAC-OS *************
+# from AppKit import NSSpeechSynthesizer
 
-nssp = NSSpeechSynthesizer
-ve = nssp.alloc().init()
+# nssp = NSSpeechSynthesizer
+# ve = nssp.alloc().init()
+
+
+# **** GOOGLE TextToSpeech *****
+from gtts import gTTS
+import os
+
+  
+# Language in which you want to convert
+language = 'en'
+  
+
 
 # import the openAI
 llm = OpenAI(temperature=0.9)
@@ -25,7 +39,10 @@ tool_names = [
     "llm-math",  # this particular tool needs an llm too, so need to pass that
 ]
 
+
 tools = load_tools(tool_names=tool_names, llm=llm)
+
+tool = YouTubeSearchTool()
 
 # initialize them
 agent = initialize_agent(
@@ -72,10 +89,35 @@ def transcribe(audio, state=""):
     else:
         output = "I'm sorry I cannot understand the language you are speaking. Please speak in English or Tamil."
 
+    # Passing the text and language to the engine, 
+    # here we have marked slow=False. Which tells 
+    # the module that the converted audio should 
+    # have a high speed
+    myobj = gTTS(text=output, lang='hi', slow=False)
+    
+    # Saving the converted audio in a mp3 file named
+    # welcome 
+    myobj.save("welcome.mp3")
+    
+    # Playing the converted file
+    os.system("mpg123 welcome.mp3")
     # # say method on the engine that passing input text to be spoken
-    ve.startSpeakingString_(output)
+    #ve.startSpeakingString_(output)
+    prompt = PromptTemplate(
+        input_variables=["state"],
+        template="Is the statement talking about a person or place or animal or a thing? please answer in 2 words what is it name of it {state}?",
+    )
 
-    return output, output
+    prompt.format(state = output)
+
+    chain = LLMChain(llm=llm, prompt=prompt)
+    author = chain.run(output)
+
+    print(f'the topic is about {author}')
+    
+    url = tool.run(author,1)
+    video_path = video_get(url)
+    return output, output, video_path
 
 
 # Set the starting state to an empty string
@@ -83,6 +125,6 @@ def transcribe(audio, state=""):
 gr.Interface(
     fn=transcribe,
     inputs=[gr.Audio(source="microphone", type="filepath", streaming=False), "state"],
-    outputs=["textbox", "state"],
+    outputs=["textbox", "state", "video"],
     live=True,
 ).launch(share=True)
