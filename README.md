@@ -1,14 +1,7 @@
 # nlp-project
 
-Requirements:
-transformers
-whisper
-gradio
-
-Import the required module for text to speech conversion
-`pip install pyttsx3`
-`pip install google-search-results`
-`pip install openai`
+Requirements: See requirements.txt file.
+Install mpg123 for playing mp3 files.
 
 Overview:
 
