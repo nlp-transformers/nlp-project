@@ -5,12 +5,13 @@ from langchain.llms import OpenAI
 from langchain.agents import load_tools, initialize_agent, AgentType
 from langchain.tools import BaseTool, StructuredTool, Tool, tool
 from deep_translator import GoogleTranslator
-
+from random_number_tool import random_number_tool
+from youTube_helper import youtube_search
 #from langchain.prompts import PromptTemplate
 #from langchain.chains import LLMChain
 #from pydantic import BaseModel, Field
 
-from youTube_helper import video_get, youtube_search
+
 
 
 # ******** MAC-OS *************
@@ -40,11 +41,15 @@ model = whisper.load_model("medium")
 youtube_tool = Tool.from_function(
         func=youtube_search,
         name="YouTube",
-        description="Tool to search for YouTube videos. Prefer this over normal search when searching for videos.",
+        description="Use this tool only to search for videos, songs and youtube. Prefer this over normal search when searching for videos.",
         return_direct=True
         #args_schema=CalculatorInput
         # coroutine= ... <- you can specify an async method if desired as well
     )
+
+
+
+
 
 # create a list of tools
 tool_names = [
@@ -53,7 +58,7 @@ tool_names = [
 ]
 tools = load_tools(tool_names=tool_names, llm=llm)
 tools.append(youtube_tool)
-
+tools.append(random_number_tool)
 # initialize them
 agent = initialize_agent(
     tools=tools, llm=llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True
