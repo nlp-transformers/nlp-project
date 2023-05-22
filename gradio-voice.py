@@ -16,15 +16,6 @@ from langchain.sql_database import SQLDatabase
 #from pydantic import BaseModel, Field
 
 
-
-
-# ******** MAC-OS *************
-# from AppKit import NSSpeechSynthesizer
-
-# nssp = NSSpeechSynthesizer
-# ve = nssp.alloc().init()
-
-
 # **** GOOGLE TextToSpeech *****
 from gtts import gTTS
 import os
@@ -39,7 +30,14 @@ llm = OpenAI(temperature=0.1)
 # to get input from speech use the following libs
 model = whisper.load_model("medium")
 
+postdb = SQLDatabase.from_uri("postgresql://abhi:mango@localhost:5432/abhi?sslmode=disable")
+toolkit = SQLDatabaseToolkit(db=postdb, llm=llm)
 
+agent = create_sql_agent(
+    llm=OpenAI(temperature=1.0),
+    toolkit=toolkit,
+    verbose=True
+)
 
 # define youtube search tool
 youtube_tool = Tool.from_function(
