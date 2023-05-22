@@ -7,6 +7,10 @@ from langchain.tools import BaseTool, StructuredTool, Tool, tool
 from deep_translator import GoogleTranslator
 from random_number_tool import random_number_tool
 from youTube_helper import youtube_search
+from langchain.agents import create_sql_agent
+from langchain.agents.agent_toolkits import SQLDatabaseToolkit
+from langchain.sql_database import SQLDatabase
+
 #from langchain.prompts import PromptTemplate
 #from langchain.chains import LLMChain
 #from pydantic import BaseModel, Field
@@ -55,10 +59,13 @@ youtube_tool = Tool.from_function(
 tool_names = [
     "serpapi",  # for google search
     "llm-math",  # this particular tool needs an llm too, so need to pass that
+    "openweathermap-api",
+    "arxiv",
 ]
+
 tools = load_tools(tool_names=tool_names, llm=llm)
-tools.append(youtube_tool)
-tools.append(random_number_tool)
+tools.append(youtube_tool, Wiki_tool, random_number_tool)
+
 # initialize them
 agent = initialize_agent(
     tools=tools, llm=llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True
@@ -148,4 +155,4 @@ gr.Interface(
     inputs=[gr.Audio(source="microphone", type="filepath", streaming=False), "state"],
     outputs=["textbox", "textbox", "image", "video", "state"],
     live=True,
-).launch(share=False)
+).launch(share=True)
