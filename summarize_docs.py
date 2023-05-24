@@ -10,5 +10,5 @@ def summarize_docs(docs):
     prompt = PromptTemplate(template=prompt_template, input_variables=["text"])
     chain = load_summarize_chain(llm, chain_type="map_reduce", map_prompt=prompt, combine_prompt=prompt)
     summary_text = chain.run(docs)
-    print(summary_text)
+    # print(summary_text)
     return summary_text

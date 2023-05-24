@@ -9,11 +9,10 @@ from random_number_tool import random_number_tool
 from youTube_helper import youtube_tool
 from url_scraping_tool import url_scraping_tool
 from current_time_tool import current_time_tool
+from wiki_tool import wiki_tool
 from langchain.agents import create_sql_agent
 from langchain.agents.agent_toolkits import SQLDatabaseToolkit
 from langchain.sql_database import SQLDatabase
-from langchain.utilities import WikipediaAPIWrapper
-
 
 
 # ******** MAC-OS *************
@@ -25,7 +24,6 @@ from langchain.utilities import WikipediaAPIWrapper
 from gtts import gTTS
 import os
 
-  
 # Language in which you want to convert
 language = 'en'
 
@@ -42,17 +40,6 @@ sql_agent = create_sql_agent(
     toolkit=toolkit,
     verbose=True
 )
-
-
-wikipedia = WikipediaAPIWrapper()
-# define wiki search tool
-wiki_tool = Tool.from_function(
-        func=wikipedia.run,
-        name="Wikipedia",
-        description="Use this tool only to search for articles in wikipedia or detailed information. Prefer other tools over this tool, use this if all the tools fail.",
-        return_direct=False # temporarily set to false to avoid long audio. Should set to true after summarisation.
-    )
-
 
 
 
