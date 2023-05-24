@@ -7,6 +7,7 @@ from deep_translator import GoogleTranslator
 from random_number_tool import random_number_tool
 from youTube_helper import youtube_tool
 from url_scraping_tool import url_scraping_tool
+from current_time_tool import current_time_tool
 from langchain.agents import create_sql_agent
 from langchain.agents.agent_toolkits import SQLDatabaseToolkit
 from langchain.sql_database import SQLDatabase
@@ -52,6 +53,7 @@ tools.append(youtube_tool)
 tools.append(random_number_tool)
 tools.append(url_scraping_tool)
 tools.append(random_number_tool)
+tools.append(current_time_tool)
 
 # define agent
 agent = initialize_agent(
