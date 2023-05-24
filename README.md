@@ -1,6 +1,10 @@
 # nlp-project
 
-Requirements: See requirements.txt file.
+Requirements: See requirements.txt file for packages.
+SERP_API_KEY,
+OPENWEATHERMAP_API_KEY,
+OPEN_AI_KEY
+
 Install mpg123 for playing mp3 files.
 
 Overview:

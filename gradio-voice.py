@@ -3,14 +3,13 @@ import whisper
 import gradio as gr
 from langchain.llms import OpenAI
 from langchain.agents import load_tools, initialize_agent, AgentType
-#from langchain.tools import BaseTool, StructuredTool, Tool, tool
 from deep_translator import GoogleTranslator
 from random_number_tool import random_number_tool
 from youTube_helper import youtube_tool
 from url_scraping_tool import url_scraping_tool
-#from langchain.prompts import PromptTemplate
-#from langchain.chains import LLMChain
-
+from langchain.agents import create_sql_agent
+from langchain.agents.agent_toolkits import SQLDatabaseToolkit
+from langchain.sql_database import SQLDatabase
 
 # ******** MAC-OS *************
 # from AppKit import NSSpeechSynthesizer
@@ -31,15 +30,28 @@ model = whisper.load_model("medium")
 # define llm
 llm = OpenAI(temperature=0.1)
 
+postdb = SQLDatabase.from_uri("postgresql://abhi:mango@localhost:5432/abhi?sslmode=disable")
+toolkit = SQLDatabaseToolkit(db=postdb, llm=llm)
+sql_agent = create_sql_agent(
+    llm=OpenAI(temperature=1.0),
+    toolkit=toolkit,
+    verbose=True
+)
+
+
 # create a list of tools
 tool_names = [
     "serpapi",  # for google search
     "llm-math",  # this particular tool needs an llm too, so need to pass that
+    "openweathermap-api",
+    "arxiv",
 ]
+
 tools = load_tools(tool_names=tool_names, llm=llm)
 tools.append(youtube_tool)
 tools.append(random_number_tool)
 tools.append(url_scraping_tool)
+tools.append(random_number_tool)
 
 # define agent
 agent = initialize_agent(

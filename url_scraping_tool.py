@@ -10,7 +10,7 @@ def url_scraper(url) :
     ]
     loader = SeleniumURLLoader(urls=urls)
     docs = loader.load()
-    print(docs)
+    #print(docs)
     summary_text = summarize_docs(docs)
 
     result = {
