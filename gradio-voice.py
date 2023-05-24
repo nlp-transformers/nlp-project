@@ -10,6 +10,7 @@ from url_scraping_tool import url_scraping_tool
 from langchain.agents import create_sql_agent
 from langchain.agents.agent_toolkits import SQLDatabaseToolkit
 from langchain.sql_database import SQLDatabase
+from langchain.utilities import WikipediaAPIWrapper
 
 # ******** MAC-OS *************
 # from AppKit import NSSpeechSynthesizer
@@ -38,6 +39,27 @@ sql_agent = create_sql_agent(
     verbose=True
 )
 
+# define youtube search tool
+youtube_tool = Tool.from_function(
+        func=youtube_search,
+        name="YouTube",
+        description="Use this tool only to search for videos, songs and youtube. Prefer this over normal search when searching for videos.",
+        return_direct=True
+        #args_schema=CalculatorInput
+        # coroutine= ... <- you can specify an async method if desired as well
+    )
+
+wikipedia = WikipediaAPIWrapper()
+# define wiki search tool
+wiki_tool = Tool.from_function(
+        func=youtube_search,
+        name="Wikipedia",
+        description="Use this tool only to search general information. Prefer other tools over this tool, use this is all the tools fail.",
+        return_direct=True
+    )
+
+
+
 
 # create a list of tools
 tool_names = [
@@ -52,6 +74,7 @@ tools.append(youtube_tool)
 tools.append(random_number_tool)
 tools.append(url_scraping_tool)
 tools.append(random_number_tool)
+tools.append(wiki_tool)
 
 # define agent
 agent = initialize_agent(
