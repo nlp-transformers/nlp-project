@@ -3,23 +3,19 @@ import whisper
 import gradio as gr
 from langchain.llms import OpenAI
 from langchain.agents import load_tools, initialize_agent, AgentType
-from langchain.tools import BaseTool, StructuredTool, Tool, tool
+#from langchain.tools import BaseTool, StructuredTool, Tool, tool
 from deep_translator import GoogleTranslator
 from random_number_tool import random_number_tool
-from youTube_helper import youtube_search
+from youTube_helper import youtube_tool
+from url_scraping_tool import url_scraping_tool
 #from langchain.prompts import PromptTemplate
 #from langchain.chains import LLMChain
-#from pydantic import BaseModel, Field
-
-
 
 
 # ******** MAC-OS *************
 # from AppKit import NSSpeechSynthesizer
-
 # nssp = NSSpeechSynthesizer
 # ve = nssp.alloc().init()
-
 
 # **** GOOGLE TextToSpeech *****
 from gtts import gTTS
@@ -29,27 +25,11 @@ import os
 # Language in which you want to convert
 language = 'en'
 
-# define llm
-llm = OpenAI(temperature=0.1)
-
 # to get input from speech use the following libs
 model = whisper.load_model("medium")
 
-
-
-# define youtube search tool
-youtube_tool = Tool.from_function(
-        func=youtube_search,
-        name="YouTube",
-        description="Use this tool only to search for videos, songs and youtube. Prefer this over normal search when searching for videos.",
-        return_direct=True
-        #args_schema=CalculatorInput
-        # coroutine= ... <- you can specify an async method if desired as well
-    )
-
-
-
-
+# define llm
+llm = OpenAI(temperature=0.1)
 
 # create a list of tools
 tool_names = [
@@ -59,7 +39,9 @@ tool_names = [
 tools = load_tools(tool_names=tool_names, llm=llm)
 tools.append(youtube_tool)
 tools.append(random_number_tool)
-# initialize them
+tools.append(url_scraping_tool)
+
+# define agent
 agent = initialize_agent(
     tools=tools, llm=llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True
 )
@@ -110,11 +92,10 @@ def transcribe(audio, state=""):
 
     if "tool" in agent_output:
         print("This is an article.")
-        if agent_output["tool"] == "youtube":
-            tldr = agent_output["tldr"]
-            detailed = agent_output["article"]
-            if "video" in agent_output:
-                video_path = agent_output["video"]
+        tldr = agent_output["tldr"]
+        detailed = agent_output["article"]
+        if (agent_output["tool"] == "youtube") and ("video" in agent_output):
+            video_path = agent_output["video"]
 
     else:
         print("This is not an article. It is coming from agent.")

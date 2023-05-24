@@ -1,10 +1,7 @@
-'''
-Transcription utilities that generate textual summaries of Youtube videos, given their URL(s)
-- video_get uses pytube to download the video URLs into a local file'''
-
 from pytube import YouTube
 from langchain.tools import YouTubeSearchTool
 from youtube_transcript_api import YouTubeTranscriptApi
+from langchain.tools import Tool
 
 def video_get(video_url):
     yt = YouTube(video_url,use_oauth=False, allow_oauth_cache=True)
@@ -42,3 +39,13 @@ def youtube_search(query: str):
 
     return result
     #return "The youtube video on "+query+" is available at URL "+result_url+" ."+"The transcript is as follows: "+video_transcript
+
+# define youtube search tool
+youtube_tool = Tool.from_function(
+        func=youtube_search,
+        name="YouTube",
+        description="Use this tool only to search for videos, songs and youtube. Prefer this over normal search when searching for videos.",
+        return_direct=True
+        #args_schema=CalculatorInput
+        # coroutine= ... <- you can specify an async method if desired as well
+    )
