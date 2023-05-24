@@ -3,6 +3,7 @@ import whisper
 import gradio as gr
 from langchain.llms import OpenAI
 from langchain.agents import load_tools, initialize_agent, AgentType
+from langchain.tools import BaseTool, StructuredTool, Tool, tool
 from deep_translator import GoogleTranslator
 from random_number_tool import random_number_tool
 from youTube_helper import youtube_tool
@@ -11,6 +12,9 @@ from current_time_tool import current_time_tool
 from langchain.agents import create_sql_agent
 from langchain.agents.agent_toolkits import SQLDatabaseToolkit
 from langchain.sql_database import SQLDatabase
+from langchain.utilities import WikipediaAPIWrapper
+
+
 
 # ******** MAC-OS *************
 # from AppKit import NSSpeechSynthesizer
@@ -40,6 +44,18 @@ sql_agent = create_sql_agent(
 )
 
 
+wikipedia = WikipediaAPIWrapper()
+# define wiki search tool
+wiki_tool = Tool.from_function(
+        func=wikipedia.run,
+        name="Wikipedia",
+        description="Use this tool only to search for articles in wikipedia or detailed information. Prefer other tools over this tool, use this if all the tools fail.",
+        return_direct=False # temporarily set to false to avoid long audio. Should set to true after summarisation.
+    )
+
+
+
+
 # create a list of tools
 tool_names = [
     "serpapi",  # for google search
@@ -54,6 +70,7 @@ tools.append(random_number_tool)
 tools.append(url_scraping_tool)
 tools.append(random_number_tool)
 tools.append(current_time_tool)
+tools.append(wiki_tool)
 
 # define agent
 agent = initialize_agent(
@@ -99,7 +116,7 @@ def transcribe(audio, state=""):
     else:
         agent_output = "I'm sorry I cannot understand the language you are speaking. Please speak in English or Tamil."
 
-    # init some image and video. Override based on agent output.
+    # init some default image and video. Override based on agent output.
     detailed = ''
     image_path = 'supportvectors.png'
     video_path = 'welcome.mp4'
@@ -123,15 +140,6 @@ def transcribe(audio, state=""):
      # Playing the audio
     os.system("mpg123 welcome.mp3")
 
-    # prompt = PromptTemplate(
-    #     input_variables=["state"],
-    #     template="Is the statement talking about a person or place or animal or a thing? please answer in 2 words what is it name of it {state}?",
-    # )
-    # prompt.format(state = output)
-    # chain = LLMChain(llm=llm, prompt=prompt)
-    # author = chain.run(output)
-    # print(f'the topic is about {author}')
-
     return tldr, detailed, image_path, video_path, tldr
 
 
@@ -143,4 +151,4 @@ gr.Interface(
     inputs=[gr.Audio(source="microphone", type="filepath", streaming=False), "state"],
     outputs=["textbox", "textbox", "image", "video", "state"],
     live=True,
-).launch(share=False)
+).launch(share=True)

@@ -11,5 +11,6 @@ psycopg2==2.9.6
 arxiv==1.4.7
 requests==2.30.0
 pyowm==3.3.0
+wikipedia==1.4.0
 
 
