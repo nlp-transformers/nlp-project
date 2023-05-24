@@ -3,6 +3,7 @@ import whisper
 import gradio as gr
 from langchain.llms import OpenAI
 from langchain.agents import load_tools, initialize_agent, AgentType
+from langchain.tools import BaseTool, StructuredTool, Tool, tool
 from deep_translator import GoogleTranslator
 from random_number_tool import random_number_tool
 from youTube_helper import youtube_tool
@@ -11,6 +12,8 @@ from langchain.agents import create_sql_agent
 from langchain.agents.agent_toolkits import SQLDatabaseToolkit
 from langchain.sql_database import SQLDatabase
 from langchain.utilities import WikipediaAPIWrapper
+from random_number_tool import random_number_tool
+from youTube_helper import youtube_search
 
 # ******** MAC-OS *************
 # from AppKit import NSSpeechSynthesizer
@@ -52,7 +55,7 @@ youtube_tool = Tool.from_function(
 wikipedia = WikipediaAPIWrapper()
 # define wiki search tool
 wiki_tool = Tool.from_function(
-        func=youtube_search,
+        func=wikipedia.run,
         name="Wikipedia",
         description="Use this tool only to search general information. Prefer other tools over this tool, use this is all the tools fail.",
         return_direct=True
@@ -164,4 +167,4 @@ gr.Interface(
     inputs=[gr.Audio(source="microphone", type="filepath", streaming=False), "state"],
     outputs=["textbox", "textbox", "image", "video", "state"],
     live=True,
-).launch(share=False)
+).launch(share=True)
