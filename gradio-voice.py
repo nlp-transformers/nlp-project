@@ -10,10 +10,15 @@ from youTube_helper import youtube_tool
 from url_scraping_tool import url_scraping_tool
 from current_time_tool import current_time_tool
 from wiki_tool import wiki_tool
+from weather_tool import weather_tool
 from langchain.agents import create_sql_agent
 from langchain.agents.agent_toolkits import SQLDatabaseToolkit
 from langchain.sql_database import SQLDatabase
 
+
+
+from random_number_tool import random_number_tool
+from youTube_helper import youtube_search
 
 # ******** MAC-OS *************
 # from AppKit import NSSpeechSynthesizer
@@ -43,11 +48,11 @@ sql_agent = create_sql_agent(
 
 
 
+
 # create a list of tools
 tool_names = [
     "serpapi",  # for google search
     "llm-math",  # this particular tool needs an llm too, so need to pass that
-    "openweathermap-api",
     "arxiv",
 ]
 
@@ -58,10 +63,11 @@ tools.append(url_scraping_tool)
 tools.append(random_number_tool)
 tools.append(current_time_tool)
 tools.append(wiki_tool)
-
+tools.append(weather_tool)
+suffix = "While using tool for the weather, if the location is not provided by the user, use California as the default location"
 # define agent
 agent = initialize_agent(
-    tools=tools, llm=llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True
+    tools=tools, llm=llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, suffix=suffix, verbose=True
 )
 
 # core function which will do all the work (POC level code)
