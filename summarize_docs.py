@@ -4,7 +4,7 @@ from langchain.prompts import PromptTemplate
 
 def summarize_docs(docs):
     llm = OpenAI(temperature=0.1)
-    prompt_template = """Write a concise bullet point summary of the following:
+    prompt_template = """Write a concise bullet point summary of the following, not more than 50 words:
         {text}
         SUMMARY IN FIVE BULLET POINTS:"""
     prompt = PromptTemplate(template=prompt_template, input_variables=["text"])
