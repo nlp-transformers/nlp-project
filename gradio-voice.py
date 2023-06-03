@@ -11,6 +11,7 @@ from url_scraping_tool import url_scraping_tool
 from current_time_tool import current_time_tool
 from wiki_tool import wiki_tool
 from weather_tool import weather_tool
+from sqldb import sql_tool
 from langchain.agents import create_sql_agent
 from langchain.agents.agent_toolkits import SQLDatabaseToolkit
 from langchain.sql_database import SQLDatabase
@@ -64,6 +65,8 @@ tools.append(random_number_tool)
 tools.append(current_time_tool)
 tools.append(wiki_tool)
 tools.append(weather_tool)
+tools.append(sql_tool)
+
 suffix = "While using tool for the weather, if the location is not provided by the user, use California as the default location"
 # define agent
 agent = initialize_agent(
