@@ -11,10 +11,17 @@ from url_scraping_tool import url_scraping_tool
 from current_time_tool import current_time_tool
 from wiki_tool import wiki_tool
 from weather_tool import weather_tool
-from sqldb import sql_tool
 from langchain.agents import create_sql_agent
 from langchain.agents.agent_toolkits import SQLDatabaseToolkit
 from langchain.sql_database import SQLDatabase
+from langchain.chat_models import ChatOpenAI
+from langchain.document_loaders import GutenbergLoader
+from arxiv_tool import arxiv_doc_tool
+from gutenburg_tool import gutenberg_doc_tool
+
+
+import ssl
+ssl.OPENSSL_VERSION = ssl.OPENSSL_VERSION.replace("LibreSSL", "OpenSSL")
 
 
 
@@ -22,6 +29,7 @@ from random_number_tool import random_number_tool
 from youTube_helper import youtube_search
 
 # ******** MAC-OS *************
+# import AppKit
 # from AppKit import NSSpeechSynthesizer
 # nssp = NSSpeechSynthesizer
 # ve = nssp.alloc().init()
@@ -37,7 +45,7 @@ language = 'en'
 model = whisper.load_model("medium")
 
 # define llm
-llm = OpenAI(temperature=0.1)
+llm = OpenAI(openai_api_key = "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", temperature=0.1)
 
 postdb = SQLDatabase.from_uri("postgresql://abhi:mango@localhost:5432/abhi?sslmode=disable")
 toolkit = SQLDatabaseToolkit(db=postdb, llm=llm)
@@ -47,26 +55,22 @@ sql_agent = create_sql_agent(
     verbose=True
 )
 
-
-
-
 # create a list of tools
 tool_names = [
     "serpapi",  # for google search
     "llm-math",  # this particular tool needs an llm too, so need to pass that
     "arxiv",
 ]
-
-tools = load_tools(tool_names=tool_names, llm=llm)
+tools = load_tools(tool_names=tool_names, llm=llm, serpapi_api_key = "7821d21983948a691da389a6cb3d8d6b9797a79ebe526626872a89129ce1fd49")
 tools.append(youtube_tool)
 tools.append(random_number_tool)
 tools.append(url_scraping_tool)
 tools.append(random_number_tool)
 tools.append(current_time_tool)
 tools.append(wiki_tool)
+tools.append(arxiv_doc_tool)
+tools.append(gutenberg_doc_tool)
 tools.append(weather_tool)
-tools.append(sql_tool)
-
 suffix = "While using tool for the weather, if the location is not provided by the user, use California as the default location"
 # define agent
 agent = initialize_agent(
@@ -128,7 +132,6 @@ def transcribe(audio, state=""):
         print("This is not an article. It is coming from agent.")
         tldr = agent_output
 
-
     # TTS. Marked slow=False meaning audio should have high speed
     myobj = gTTS(text=tldr, lang=language, slow=False)
     # Saving the converted audio in a mp3 file named
@@ -137,9 +140,6 @@ def transcribe(audio, state=""):
     os.system("mpg123 welcome.mp3")
 
     return tldr, detailed, image_path, video_path, tldr
-
-
-
 
 # Set the starting state to an empty string
 gr.Interface(
