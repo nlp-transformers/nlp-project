@@ -18,13 +18,6 @@ from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import GutenbergLoader
 from arxiv_tool import arxiv_doc_tool
 from gutenburg_tool import gutenberg_doc_tool
-
-
-import ssl
-ssl.OPENSSL_VERSION = ssl.OPENSSL_VERSION.replace("LibreSSL", "OpenSSL")
-
-
-
 from random_number_tool import random_number_tool
 from youTube_helper import youtube_search
 
@@ -45,7 +38,7 @@ language = 'en'
 model = whisper.load_model("medium")
 
 # define llm
-llm = OpenAI(openai_api_key = "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", temperature=0.1)
+llm = OpenAI(temperature=0.1)
 
 postdb = SQLDatabase.from_uri("postgresql://abhi:mango@localhost:5432/abhi?sslmode=disable")
 toolkit = SQLDatabaseToolkit(db=postdb, llm=llm)
@@ -61,7 +54,7 @@ tool_names = [
     "llm-math",  # this particular tool needs an llm too, so need to pass that
     "arxiv",
 ]
-tools = load_tools(tool_names=tool_names, llm=llm, serpapi_api_key = "7821d21983948a691da389a6cb3d8d6b9797a79ebe526626872a89129ce1fd49")
+tools = load_tools(tool_names=tool_names, llm=llm)
 tools.append(youtube_tool)
 tools.append(random_number_tool)
 tools.append(url_scraping_tool)
