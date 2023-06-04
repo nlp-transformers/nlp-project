@@ -5,6 +5,6 @@ weather = OpenWeatherMapAPIWrapper()
 weather_tool = Tool.from_function(
         func=weather.run,
         name="weather",
-        description="Use this tool only to search for any weather related information, If the user doesn't give a location, use california as location",
+        description="Use this tool only to search for any weather related information, the default location is san jose, california. Give a short description",
         return_direct=True
     )

@@ -139,13 +139,13 @@ def transcribe(audio, state=""):
     # Playing the audio
     os.system("mpg123 welcome.mp3")
 
-    return tldr, detailed, image_path, video_path, tldr
+    return tldr, detailed, image_path, video_path, tldr, "welcome.mp3"
 
 
 # Set the starting state to an empty string
 gr.Interface(
     fn=transcribe,
     inputs=[gr.Audio(source="microphone", type="filepath", streaming=False), "state"],
-    outputs=["textbox", "textbox", "image", "video", "state"],
+    outputs=["textbox", "textbox", "image", "video", "state", "audio"],
     live=True,
 ).launch(share=True)
