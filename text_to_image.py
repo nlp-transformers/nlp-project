@@ -12,7 +12,7 @@ def text_to_image(prompt):
     repo_id = "runwayml/stable-diffusion-v1-5"
     scheduler = EulerDiscreteScheduler.from_pretrained(repo_id, subfolder="scheduler")
     stable_diffusion = DiffusionPipeline.from_pretrained(repo_id, scheduler=scheduler)
-    image = stable_diffusion("Monkey on a boat").images[0]
+    image = stable_diffusion("prompt").images[0]
     image.save('output.png')
     print(image)
     return image
