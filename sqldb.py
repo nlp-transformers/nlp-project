@@ -4,7 +4,7 @@ from langchain.sql_database import SQLDatabase
 from langchain.llms.openai import OpenAI
 from langchain.agents import AgentExecutor
 from langchain import OpenAI, SQLDatabase, SQLDatabaseChain
-from IPython.display import Markdown, HTML
+# from IPython.display import Markdown, HTML
 from langchain.utilities import WikipediaAPIWrapper
 from langchain.tools import BaseTool, StructuredTool, Tool, tool
 from langchain.text_splitter import CharacterTextSplitter

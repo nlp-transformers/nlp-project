@@ -1,4 +1,4 @@
-#from transformers import pipeline
+# from transformers import pipeline
 import whisper
 import gradio as gr
 from langchain.llms import OpenAI
@@ -11,15 +11,13 @@ from url_scraping_tool import url_scraping_tool
 from current_time_tool import current_time_tool
 from wiki_tool import wiki_tool
 from weather_tool import weather_tool
+from arxiv_tool import arxiv_doc_tool
+from gutenburg_tool import gutenberg_doc_tool
+from text_to_image import text_to_image
 from langchain.agents import create_sql_agent
 from langchain.agents.agent_toolkits import SQLDatabaseToolkit
 from langchain.sql_database import SQLDatabase
 from langchain.chat_models import ChatOpenAI
-from langchain.document_loaders import GutenbergLoader
-from arxiv_tool import arxiv_doc_tool
-from gutenburg_tool import gutenberg_doc_tool
-from random_number_tool import random_number_tool
-from youTube_helper import youtube_search
 
 # ******** MAC-OS *************
 # import AppKit
@@ -70,6 +68,7 @@ agent = initialize_agent(
     tools=tools, llm=llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, suffix=suffix, verbose=True
 )
 
+
 # core function which will do all the work (POC level code)
 def transcribe(audio, state=""):
     # load audio and pad/trim it to fit 30 seconds
@@ -103,7 +102,7 @@ def transcribe(audio, state=""):
 
     print("result text --> ", result_text)
     if result_text != "Unknown language":
-        # Now add the lanfChain logic here to process the text and get the responses.
+        # Now add the langChain logic here to process the text and get the responses.
         # once we get the response, we can output it to the voice.
         agent_output = agent.run(result_text, )
     else:
@@ -125,14 +124,23 @@ def transcribe(audio, state=""):
         print("This is not an article. It is coming from agent.")
         tldr = agent_output
 
+    # generate image based on tldr
+    try:
+        image = text_to_image(tldr)
+        if image:
+            image_path = 'output.png'
+    except:
+        print('Some problem generating image.')
+
     # TTS. Marked slow=False meaning audio should have high speed
     myobj = gTTS(text=tldr, lang=language, slow=False)
     # Saving the converted audio in a mp3 file named
     myobj.save("welcome.mp3")
-     # Playing the audio
+    # Playing the audio
     os.system("mpg123 welcome.mp3")
 
     return tldr, detailed, image_path, video_path, tldr
+
 
 # Set the starting state to an empty string
 gr.Interface(
