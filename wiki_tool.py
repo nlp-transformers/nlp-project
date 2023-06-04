@@ -24,6 +24,6 @@ def get_wikipedia_article(query):
 wiki_tool = Tool.from_function(
         func=get_wikipedia_article,
         name="Wikipedia",
-        description="Use this tool only to search for articles in wikipedia or detailed information. Prefer other tools over this tool, use this if all the tools fail.",
+        description="Use this tool to search for articles in wikipedia or detailed information. Prefer this tool over arxiv if searching for articles.",
         return_direct=True
     )

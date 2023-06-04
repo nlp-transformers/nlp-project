@@ -12,5 +12,6 @@ arxiv_doc_tool = Tool.from_function(
     name="arxiv",
     func=arxiv_wrapper.run,
     args_schema=ArxivInput,
-    description="Search the arxiv pre-print repository",
+    description="Use this tool to search for research papers in arxiv pre-print repository.",
+    return_direct=True
 )

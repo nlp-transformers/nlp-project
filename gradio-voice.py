@@ -51,7 +51,6 @@ sql_agent = create_sql_agent(
 tool_names = [
     "serpapi",  # for google search
     "llm-math",  # this particular tool needs an llm too, so need to pass that
-    "arxiv",
 ]
 tools = load_tools(tool_names=tool_names, llm=llm)
 tools.append(youtube_tool)
@@ -135,17 +134,17 @@ def transcribe(audio, state=""):
         print('Some problem generating image.')
 
         # generate image based on tldr
-    try:
-        tldr_video_path = text_to_video(tldr)
-    except:
-        print('Some problem generating video.')
+    # try:
+    #     tldr_video_path = text_to_video(tldr)
+    # except:
+    #     print('Some problem generating video.')
 
     # TTS. Marked slow=False meaning audio should have high speed
     myobj = gTTS(text=tldr, lang=language, slow=False)
     # Saving the converted audio in a mp3 file named
     myobj.save("welcome.mp3")
     # Playing the audio
-    os.system("mpg123 welcome.mp3")
+    # os.system("mpg123 welcome.mp3")
 
     return tldr, detailed, image_path, video_path, tldr, "welcome.mp3", tldr_video_path
 
