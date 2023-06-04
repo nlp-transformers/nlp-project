@@ -6,7 +6,7 @@ from langchain.docstore.document import Document
 
 def get_wikipedia_article(query):
     wikipedia = WikipediaAPIWrapper()
-    text_splitter = CharacterTextSplitter()
+    text_splitter = CharacterTextSplitter(separator='\n', chunk_size=2000, chunk_overlap=0)
     wikipedia_result = wikipedia.run(query)
     texts = text_splitter.split_text(wikipedia_result)
     # print(len(texts))

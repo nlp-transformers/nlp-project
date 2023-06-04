@@ -1,7 +1,3 @@
-from langchain.chains.summarize import load_summarize_chain
-from langchain.llms import OpenAI
-from langchain.prompts import PromptTemplate
-from langchain.utilities import WikipediaAPIWrapper
 from langchain.tools import BaseTool, StructuredTool, Tool, tool
 from summarize_docs import summarize_docs
 from langchain.text_splitter import CharacterTextSplitter
@@ -17,14 +13,6 @@ class GutenbergBookRetriever:
         text = response.text
         return text
 
-def summarize_docs(docs):
-    llm = OpenAI(openai_api_key="", temperature=0.4)
-    prompt_template = """Write a concise summary of the following, not more than 50 words:
-        {text}
-        SUMMARY IN FIVE BULLET POINTS:"""
-    prompt = PromptTemplate(template=prompt_template, input_variables=["text"])
-    summary_text = ""
-    return summary_text
 def get_book_title(book_id):
     url = f"http://www.gutenberg.org/cache/epub/{book_id}/pg{book_id}.txt"
     response = requests.get(url)
@@ -77,21 +65,15 @@ def get_gutenberg_book_summary(book_id):
     release_date = get_release_date(book_id)
     language = get_book_language(book_id)
 
-
-    text_splitter = CharacterTextSplitter()
-    book_content = book_retriever.retrieve_book_content(book_id)
+    text_splitter = CharacterTextSplitter(separator='\n', chunk_size=2000, chunk_overlap=0)
     texts = text_splitter.split_text(book_content)
-    docs = [Document(page_content=book_content)]
-    # docs = [Document(page_content=book_content) for t in texts[:3]]
+    docs = [Document(page_content=t) for t in texts[:10]]
     summary_text = summarize_docs(docs)
-
+    tldr = "Book title: " + book_title + "\nBook author: " + book_author + "\nRelease date: " + release_date + "\nLanguage: " + language + "\n" + summary_text
     result = {
-        "tldr": summary_text,
-        "book_title": book_title,
-        "book_author": book_author,
-        "release_date": release_date,
-        "language": language,
-        # "book_content": book_content
+        "tool": "gutenburg",
+        "tldr": tldr,
+        "article": book_content,
     }
     return result
 
@@ -102,6 +84,6 @@ gutenberg_doc_tool = Tool.from_function(
     description="Use this tool to retrieve a book information from the Gutenberg free text library. Input to the tool should be the book ID.",
 )
 
-book_id = 123
-summary_result = get_gutenberg_book_summary(book_id)
-print(summary_result)
+# book_id = 123
+# summary_result = get_gutenberg_book_summary(book_id)
+# print(summary_result)

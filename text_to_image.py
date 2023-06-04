@@ -9,13 +9,13 @@ from diffusers import DiffusionPipeline, EulerDiscreteScheduler
 #DPMSolverMultistepScheduler
 
 def text_to_image(prompt):
-    print(" in text to image fro promtp ", prompt)
+    print(" in text to image for prompt ", prompt)
     repo_id = "runwayml/stable-diffusion-v1-5"
    
     scheduler = EulerDiscreteScheduler.from_pretrained(repo_id, subfolder="scheduler")
     stable_diffusion = DiffusionPipeline.from_pretrained(repo_id, scheduler=scheduler, local_files_only=True)
     stable_diffusion.to("cuda")
-    image = stable_diffusion(prompt,height=496, width=496 ,num_inference_steps=30).images[0]
+    image = stable_diffusion(prompt, height=496, width=496, num_inference_steps=30).images[0]
     image.save('output.png')
     print(image)
     return image
