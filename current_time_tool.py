@@ -2,7 +2,7 @@ from langchain.tools import Tool
 import requests
 
 def get_current_time(location) :
-    IPGEOLOCATION_KEY = 'f22f0d286d3f4ad6a8261993ffbfa1f1'
+    IPGEOLOCATION_KEY = '' # put your IPGEOLOCATION_KEY here
     if location == "current location":
         payload = {'apiKey': IPGEOLOCATION_KEY}
     else:
