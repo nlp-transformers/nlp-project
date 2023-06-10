@@ -15,6 +15,8 @@ from langchain.agents import create_sql_agent
 from langchain.agents.agent_toolkits import SQLDatabaseToolkit
 from langchain.sql_database import SQLDatabase
 from tool_retrieval import get_tools
+from text_to_image import text_to_image
+from text_to_video import text_to_video
 
 
 from random_number_tool import random_number_tool
@@ -110,22 +112,34 @@ def transcribe(audio, state=""):
         tldr = agent_output
 
 
+    # generate image based on tldr
+    try:
+        image = text_to_image(tldr)
+        if image:
+            image_path = 'output.png'
+    except:
+        print('Some problem generating image.')
+
+    # generate image based on tldr
+    try:
+        tldr_video_path = text_to_video(tldr)
+    except:
+        print('Some problem generating video.')
+
     # TTS. Marked slow=False meaning audio should have high speed
     myobj = gTTS(text=tldr, lang=language, slow=False)
     # Saving the converted audio in a mp3 file named
     myobj.save("welcome.mp3")
-     # Playing the audio
-    os.system("mpg123 welcome.mp3")
+    # Playing the audio
+    # os.system("mpg123 welcome.mp3")
 
-    return tldr, detailed, image_path, video_path, tldr
-
-
+    return tldr, detailed, image_path, video_path, tldr, "welcome.mp3", tldr_video_path
 
 
 # Set the starting state to an empty string
 gr.Interface(
     fn=transcribe,
     inputs=[gr.Audio(source="microphone", type="filepath", streaming=False), "state"],
-    outputs=["textbox", "textbox", "image", "video", "state"],
+    outputs=["textbox", "textbox", "image", "video", "state", "audio", "video"],
     live=True,
 ).launch(share=True)

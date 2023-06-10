@@ -10,19 +10,18 @@ from current_time_tool import current_time_tool
 from wiki_tool import wiki_tool
 from weather_tool import weather_tool
 from sqldb import sql_tool
+from arxiv_tool import arxiv_doc_tool
+from gutenburg_tool import gutenberg_doc_tool
 
 from langchain.llms import OpenAI
 
 # define llm
 llm = OpenAI(temperature=0.1)
 
-# create a list of tools
 tool_names = [
     "serpapi",  # for google search
     "llm-math",  # this particular tool needs an llm too, so need to pass that
-    "arxiv",
 ]
-
 tools = load_tools(tool_names=tool_names, llm=llm)
 tools.append(youtube_tool)
 tools.append(random_number_tool)
@@ -30,8 +29,9 @@ tools.append(url_scraping_tool)
 tools.append(random_number_tool)
 tools.append(current_time_tool)
 tools.append(wiki_tool)
+tools.append(arxiv_doc_tool)
+tools.append(gutenberg_doc_tool)
 tools.append(weather_tool)
-tools.append(sql_tool)
 
 # create embeddings for the tool retrieval, depending on the query the get_tools will pick the appropriate tool.
 docs = [Document(page_content=t.description, metadata={"index": i}) for i, t in enumerate(tools)]
